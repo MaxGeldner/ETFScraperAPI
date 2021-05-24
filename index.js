@@ -12,13 +12,18 @@ const isinCacheValidityHours = 24
 
 app.get('/', async (req, res) => {
   const isin = req.query.isin
+  let previousPrice = false
   if (!isin) {
     res.json({})
   } else {
       const cacheResult = checkIsinCache(isin)
       if (cacheResult) {
-          res.json(cacheResult)
-          return
+          if (cacheResult.valid === false) {
+            previousPrice = cacheResult.price
+          } else {
+            res.json(cacheResult)
+            return
+          }
       }
   }
 
@@ -37,7 +42,8 @@ app.get('/', async (req, res) => {
   const etfObject = { 
     price: parseFloat(price.replace(',', '.')),
     isin,
-    name
+    name,
+    previousPrice
   }
 
   cacheToIsinCache(etfObject)
@@ -56,7 +62,8 @@ function checkIsinCache(isin) {
         const cachedObject = cacheJSON[isin]
         const age = new Date() - new Date(cachedObject.cached)
         if (age / 60 / 60 >= isinCacheValidityHours) {
-            return false
+            cachedObject.valid = false
+            return cachedObject
         }
         return cachedObject
     }
