@@ -10,7 +10,7 @@ const Cache = {
         if (cacheJSON.hasOwnProperty(isin)) {
             const cachedObject = cacheJSON[isin]
             const age = new Date() - new Date(cachedObject.cached)
-            if (age / 60 / 60 >= isinCacheValidityHours) {
+            if (age / 1000 / 60 / 60 >= isinCacheValidityHours) {
                 cachedObject.valid = false
                 return cachedObject
             }

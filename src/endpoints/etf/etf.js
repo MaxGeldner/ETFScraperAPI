@@ -22,6 +22,7 @@ const ETFEndpoint = {
         let price = 0.00
         let name = ''
         try {
+            console.log('API Request')
             const response = await axios.get('https://www.justetf.com/de/etf-profile.html?isin=' + isin)
             const data = response.data
             price = parse(data).querySelectorAll('.val')[3].innerText.split('\n')[2].trim() // '72,71'
